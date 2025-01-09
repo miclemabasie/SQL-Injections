@@ -1,6 +1,9 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from decouple import config
 import psycopg2
+import pyfiglet
+from termcolor import colored
+
 
 app = Flask(__name__)
 
@@ -18,8 +21,9 @@ def get_db_connection():
 
 @app.route('/login', methods=['POST'])
 def login():
-    username = request.form['username']
-    password = request.form['password']
+    username = request.form.get('username')
+    password = request.form.get('password')
+    param = request.form.get('param')
 
     # The vulnerable database query
     query = f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'"
@@ -31,12 +35,30 @@ def login():
         cursor.execute(query)
         user = cursor.fetchone()
         if user:
-            return f"Welcome, {user[1]}! \n"
+            if not param:
+                return show_message("success")
+            return jsonify({"status": "success", "message": "Login successful!"})
         else:
-            return "Invalid credentials."
+            return jsonify({"status": "error", "message": "Invalid credentials."})
     finally:
         cursor.close()
         conn.close()
+
+def show_message(type):
+    if type == "success":
+        text = "ACCESS GRANTED"
+        # Use a specific font
+        ascii_art = pyfiglet.figlet_format(text, font="small")  # Replace "big" with other fonts for size control
+        # Add color
+        colored_ascii_art = colored(ascii_art, 'green')
+        return colored_ascii_art
+    else:
+        text = "ACCESS DENIED"
+        # Use a specific font
+        ascii_art = pyfiglet.figlet_format(text, font="small")  # Replace "big" with other fonts for size control
+        # Add color
+        colored_ascii_art = colored(ascii_art, 'red')
+        return colored_ascii_art
 
 if __name__ == '__main__':
     app.run(debug=True)
