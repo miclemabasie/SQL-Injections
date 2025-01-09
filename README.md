@@ -112,7 +112,7 @@ This ensures that user inputs are treated as data and not executable code, preve
 .
 ├── app/vulnerable_server          # Flask vulnerable server code
 ├── app/secured_server            # Flask secured server code
-├── streamlit_app.py     # Streamlit frontend code
+├── app/client.py     # Streamlit frontend code
 ├── requirements.txt     # Required Python dependencies
 ├── .env                # Environment variables (DB credentials)
 ├── README.md           # Project documentation
